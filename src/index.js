@@ -1,13 +1,7 @@
-import Vue from 'vue'
-
-// draggable directive
 import Draggable from './draggable.directive'
 
-const directives = {
-  Draggable
+export default {
+  install: function (Vue, options) {
+    Vue.directive('draggable', Draggable)
+  }
 }
-
-Object.keys(directives)
-  .forEach(dir => {
-    Vue.directive(dir, directives[dir])
-  })

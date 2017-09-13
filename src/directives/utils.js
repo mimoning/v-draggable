@@ -14,10 +14,10 @@ function setStyle (el, style) {
 // 获取元素的 translate 属性值
 function getTranslateVals (el) {
   const reg = /translate\((.*?)\)/
-  const translateVals = el.style.transform.match(reg)
+  const translateVals = el.style.transform
   // 如果没有 translate 值的话，则
-  if (translateVals) {
-    const vals = translateVals[1].replace(/px/g, '').split(',')
+  if (translateVals && translateVals.match(reg)) {
+    const vals = translateVals.match(reg)[1].replace(/px/g, '').split(',')
     return {
       translateX: parseFloat(vals[0]),
       translateY: parseFloat(vals[1])
@@ -41,14 +41,16 @@ function moveElement (el, event, start) {
   const translateReg = /translate\(.*?\)/
   const originTransform = el.style.transform
   // 如果 transform 属性中有 traslate 的值，则替换
-  if (originTransform.match(translateReg)) {
+  if (originTransform && originTransform.match(translateReg)) {
     setStyle(el, {
       transform: originTransform.replace(translateReg,
         `translate(${translateX}px, ${translateY}px)`)
     })
   } else { // 如果没有，则直接接上 translate 的值
     setStyle(el, {
-      transform: `${originTransform} translate(${translateX}px, ${translateY}px)`
+      transform: originTransform
+        ? `${originTransform} translate(${translateX}px, ${translateY}px)`
+        : `translate(${translateX}px, ${translateY}px)`
     })
   }
 }

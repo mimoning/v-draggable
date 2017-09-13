@@ -3,7 +3,9 @@
 import Vue from 'vue'
 import App from './App'
 
-import './directives'
+import draggable from '../src'
+
+Vue.use(draggable)
 
 Vue.config.productionTip = false
 

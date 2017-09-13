@@ -2,7 +2,7 @@ import {
   getTranslateVals,
   moveElement,
   setStyle
-} from './util'
+} from './utils'
 
 // 触发元素在鼠标左键按下时，鼠标指针样式
 const MOUSE_DOWN_STYLE = {

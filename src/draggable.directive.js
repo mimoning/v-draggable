@@ -12,6 +12,8 @@ const MOUSE_DOWN_STYLE = {
 const MOUSE_OVER_STYLE = {
   cursor: '-webkit-grab'
 }
+// 额外的样式
+const EXTRA_STYLE = {}
 // 开始点的坐标及元素的 translate 值
 const startPoint = {
   x: undefined,
@@ -41,7 +43,7 @@ function triggerMouseover () {
 // 记录开始点坐标及绑定元素的 translate 值
 // 给 document 绑定鼠标移动事件，使绑定元素可以随鼠标移动，即拖动效果
 function triggerMousedown (event) {
-  setStyle($trigger, MOUSE_DOWN_STYLE)
+  setStyle($trigger, Object.assign({}, MOUSE_DOWN_STYLE, EXTRA_STYLE))
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
@@ -66,7 +68,7 @@ function onDrop () {
 // 获取触发元素及其选择器
 function getTrigger (el, binding) {
   // 如果绑定值是字符串，可以指定触发元素的选择器，优先级比指令参数低
-  if (typeof binding.value === 'string') {
+  if (binding.value && typeof binding.value === 'string') {
     $selector = binding.value
   }
   // 传入指令的参数，可以指定触发元素的 id，其优先级比绑定值高
@@ -78,10 +80,24 @@ function getTrigger (el, binding) {
   $el = el
 }
 
+// 获取额外的样式或 class
+function getExtraStyleAndClass (value) {
+  if (!value || typeof value !== 'object') return
+  Object.keys(value).forEach(key => {
+    switch (key) {
+      case 'draggingStyle':
+        Object.assign(EXTRA_STYLE, value[key])
+        break
+      default:
+    }
+  })
+}
 // 当指令绑定到元素上时
 function bind (el, binding, vnode) {
   // 获取触发元素
   getTrigger(el, binding)
+  // 获取拖动时需要添加的额外样式或 class
+  getExtraStyleAndClass(binding.value)
   // 处理事件绑定
   // 触发拖动元素
   $trigger.addEventListener('mouseover', triggerMouseover)

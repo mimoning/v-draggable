@@ -6,14 +6,6 @@ function setStyle (el, style) {
   })
 }
 
-// 把元素指定样式去除
-function removeStyle (el, style) {
-  const styles = Object.keys(style)
-  styles.forEach(key => {
-    el.style[key] = null
-  })
-}
-
 // 获取元素的 translate 属性值
 function getTranslateVals (el) {
   const reg = /translate\((.*?)\)/
@@ -61,6 +53,5 @@ function moveElement (el, event, start) {
 export {
   getTranslateVals,
   moveElement,
-  removeStyle,
   setStyle
 }

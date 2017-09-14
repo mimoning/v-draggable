@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="cube" v-draggable:trigger="{
+    <div class="cube" style="color: green" v-draggable:trigger="{
       draggingStyle: {
         color: 'red'
       },

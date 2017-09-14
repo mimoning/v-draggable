@@ -1,7 +1,6 @@
 import {
   getTranslateVals,
   moveElement,
-  removeStyle,
   setStyle
 } from './utils'
 
@@ -15,6 +14,8 @@ const MOUSE_OVER_STYLE = {
 }
 // 额外的样式
 const EXTRA_STYLE = {}
+// 原本的样式
+const ORIGIN_STYLE = {}
 // 额外的 class
 let EXTRA_CLASS = ''
 // 开始点的坐标及元素的 translate 值
@@ -46,10 +47,10 @@ function triggerMouseover () {
 // 记录开始点坐标及绑定元素的 translate 值
 // 给 document 绑定鼠标移动事件，使绑定元素可以随鼠标移动，即拖动效果
 function triggerMousedown (event) {
-  setStyle($trigger, MOUSE_DOWN_STYLE)
   // 添加额外的样式或 class
   setStyle($el, EXTRA_STYLE)
   $el.classList.add(EXTRA_CLASS)
+  setStyle($trigger, MOUSE_DOWN_STYLE)
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
@@ -65,11 +66,11 @@ function triggerMousedown (event) {
 // 要解除 document 上的 mousemove 事件，使元素不在随鼠标移动
 // 即，拖动停止
 function onDrop () {
+  // 把添加的额外样式或 class 去除
+  setStyle($el, ORIGIN_STYLE)
+  $el.classList.remove(EXTRA_CLASS)
   // 将鼠标样式还原成小手状
   setStyle($trigger, MOUSE_OVER_STYLE)
-  // 把添加的额外样式或 class 去除
-  removeStyle($el, EXTRA_STYLE)
-  $el.classList.remove(EXTRA_CLASS)
   // 移除 document 上的 mousemove 事件
   document.removeEventListener('mousemove', onMove)
 }
@@ -89,7 +90,7 @@ function getTrigger (el, binding) {
   $el = el
 }
 
-// 获取额外的样式或 class
+// 获取额外的样式或 class 及其原本的样式
 function getExtraStyleAndClass (value) {
   if (!value || typeof value !== 'object') return
   if (value.draggingStyle) {
@@ -99,12 +100,22 @@ function getExtraStyleAndClass (value) {
     EXTRA_CLASS = value.draggingClass
   }
 }
+
+// 获取绑定元素的需要修改的原始 style
+function getOriginStyle (el) {
+  Object.keys(EXTRA_STYLE).forEach(key => {
+    ORIGIN_STYLE[key] = el.style[key]
+  })
+}
+
 // 当指令绑定到元素上时
 function bind (el, binding, vnode) {
   // 获取触发元素
   getTrigger(el, binding)
   // 获取拖动时需要添加的额外样式或 class
   getExtraStyleAndClass(binding.value)
+  // 获取绑定元素的原始 style
+  getOriginStyle(el)
   // 处理事件绑定
   // 触发拖动元素
   $trigger.addEventListener('mouseover', triggerMouseover)

@@ -1,6 +1,7 @@
 import {
   getTranslateVals,
   moveElement,
+  removeStyle,
   setStyle
 } from './utils'
 
@@ -12,6 +13,10 @@ const MOUSE_DOWN_STYLE = {
 const MOUSE_OVER_STYLE = {
   cursor: '-webkit-grab'
 }
+// 额外的样式
+const EXTRA_STYLE = {}
+// 额外的 class
+let EXTRA_CLASS = ''
 // 开始点的坐标及元素的 translate 值
 const startPoint = {
   x: undefined,
@@ -42,6 +47,9 @@ function triggerMouseover () {
 // 给 document 绑定鼠标移动事件，使绑定元素可以随鼠标移动，即拖动效果
 function triggerMousedown (event) {
   setStyle($trigger, MOUSE_DOWN_STYLE)
+  // 添加额外的样式或 class
+  setStyle($el, EXTRA_STYLE)
+  $el.classList.add(EXTRA_CLASS)
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
@@ -59,23 +67,44 @@ function triggerMousedown (event) {
 function onDrop () {
   // 将鼠标样式还原成小手状
   setStyle($trigger, MOUSE_OVER_STYLE)
+  // 把添加的额外样式或 class 去除
+  removeStyle($el, EXTRA_STYLE)
+  $el.classList.remove(EXTRA_CLASS)
   // 移除 document 上的 mousemove 事件
   document.removeEventListener('mousemove', onMove)
 }
 
-// 当指令绑定到元素上时
-function bind (el, binding, vnode) {
-  // 传入指令的绑定值，可以指定触发元素
-  if (binding.value) {
+// 获取触发元素及其选择器
+function getTrigger (el, binding) {
+  // 如果绑定值是字符串，可以指定触发元素的选择器，优先级比指令参数低
+  if (binding.value && typeof binding.value === 'string') {
     $selector = binding.value
   }
-  // 传入指令的参数，可以指定触发元素的 id，其优先级比绑定值值
+  // 传入指令的参数，可以指定触发元素的 id，其优先级比绑定值高
   if (binding.arg) {
     $selector = `#${binding.arg}`
   }
   // 在找不到指定触发元素情况下，触发元素为绑定元素本身
   $trigger = el.querySelector($selector) || el
   $el = el
+}
+
+// 获取额外的样式或 class
+function getExtraStyleAndClass (value) {
+  if (!value || typeof value !== 'object') return
+  if (value.draggingStyle) {
+    Object.assign(EXTRA_STYLE, value.draggingStyle)
+  }
+  if (value.draggingClass) {
+    EXTRA_CLASS = value.draggingClass
+  }
+}
+// 当指令绑定到元素上时
+function bind (el, binding, vnode) {
+  // 获取触发元素
+  getTrigger(el, binding)
+  // 获取拖动时需要添加的额外样式或 class
+  getExtraStyleAndClass(binding.value)
   // 处理事件绑定
   // 触发拖动元素
   $trigger.addEventListener('mouseover', triggerMouseover)

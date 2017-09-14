@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <div class="cube" v-draggable:trigger="'.test-trigger'">
+    <div class="cube" v-draggable:trigger="{
+      draggingStyle: {
+        color: 'red'
+      },
+      draggingClass: 'mimo'
+    }">
       <div id="trigger">Trigger</div>
       <div class="test-trigger">Trigger2</div>
     </div>

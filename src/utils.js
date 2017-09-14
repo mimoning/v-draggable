@@ -4,11 +4,14 @@ function setStyle (el, style) {
   styles.forEach(key => {
     el.style[key] = style[key]
   })
-  return () => {
-    styles.forEach(key => {
-      el.style[key] = ''
-    })
-  }
+}
+
+// 把元素指定样式去除
+function removeStyle (el, style) {
+  const styles = Object.keys(style)
+  styles.forEach(key => {
+    el.style[key] = null
+  })
 }
 
 // 获取元素的 translate 属性值
@@ -58,5 +61,6 @@ function moveElement (el, event, start) {
 export {
   getTranslateVals,
   moveElement,
+  removeStyle,
   setStyle
 }

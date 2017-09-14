@@ -1,6 +1,7 @@
 import {
   getTranslateVals,
   moveElement,
+  removeStyle,
   setStyle
 } from './utils'
 
@@ -43,7 +44,8 @@ function triggerMouseover () {
 // 记录开始点坐标及绑定元素的 translate 值
 // 给 document 绑定鼠标移动事件，使绑定元素可以随鼠标移动，即拖动效果
 function triggerMousedown (event) {
-  setStyle($trigger, Object.assign({}, MOUSE_DOWN_STYLE, EXTRA_STYLE))
+  setStyle($trigger, MOUSE_DOWN_STYLE)
+  setStyle($el, EXTRA_STYLE)
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
@@ -61,6 +63,7 @@ function triggerMousedown (event) {
 function onDrop () {
   // 将鼠标样式还原成小手状
   setStyle($trigger, MOUSE_OVER_STYLE)
+  removeStyle($el, EXTRA_STYLE)
   // 移除 document 上的 mousemove 事件
   document.removeEventListener('mousemove', onMove)
 }

@@ -2,7 +2,7 @@ import {
   getTranslateVals,
   moveElement,
   setStyle
-} from '@/directives/utils'
+} from '@/utils'
 
 // 测试 setStyle
 describe('SetStyle', () => {

@@ -1,6 +1,6 @@
 {
   "name": "vue-draggable",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A vue directive to let your components drag and drop~",
   "author": "MimoN <mimo.ouyang@daocloud.io>",
   "private": true,

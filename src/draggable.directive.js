@@ -15,6 +15,8 @@ const MOUSE_OVER_STYLE = {
 }
 // 额外的样式
 const EXTRA_STYLE = {}
+// 额外的 class
+let EXTRA_CLASS = ''
 // 开始点的坐标及元素的 translate 值
 const startPoint = {
   x: undefined,
@@ -45,7 +47,9 @@ function triggerMouseover () {
 // 给 document 绑定鼠标移动事件，使绑定元素可以随鼠标移动，即拖动效果
 function triggerMousedown (event) {
   setStyle($trigger, MOUSE_DOWN_STYLE)
+  // 添加额外的样式或 class
   setStyle($el, EXTRA_STYLE)
+  $el.classList.add(EXTRA_CLASS)
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
@@ -63,7 +67,9 @@ function triggerMousedown (event) {
 function onDrop () {
   // 将鼠标样式还原成小手状
   setStyle($trigger, MOUSE_OVER_STYLE)
+  // 把添加的额外样式或 class 去除
   removeStyle($el, EXTRA_STYLE)
+  $el.classList.remove(EXTRA_CLASS)
   // 移除 document 上的 mousemove 事件
   document.removeEventListener('mousemove', onMove)
 }
@@ -86,14 +92,12 @@ function getTrigger (el, binding) {
 // 获取额外的样式或 class
 function getExtraStyleAndClass (value) {
   if (!value || typeof value !== 'object') return
-  Object.keys(value).forEach(key => {
-    switch (key) {
-      case 'draggingStyle':
-        Object.assign(EXTRA_STYLE, value[key])
-        break
-      default:
-    }
-  })
+  if (value.draggingStyle) {
+    Object.assign(EXTRA_STYLE, value.draggingStyle)
+  }
+  if (value.draggingClass) {
+    EXTRA_CLASS = value.draggingClass
+  }
 }
 // 当指令绑定到元素上时
 function bind (el, binding, vnode) {

@@ -1,6 +1,15 @@
 <template>
   <div id="app">
-    <div class="cube" v-draggable:trigger="'.test-trigger'">
+    <div class="cube" style="color: green" v-draggable:trigger="{
+      draggingStyle: {
+        color: 'red'
+      },
+      draggingClass: 'mimo',
+      onDrop,
+      onDrag,
+      onCatch,
+      disabled
+    }">
       <div id="trigger">Trigger</div>
       <div class="test-trigger">Trigger2</div>
     </div>
@@ -9,7 +18,32 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  data () {
+    return {
+      disabled: false
+    }
+  },
+  methods: {
+    onDrop (a, dis) {
+      console.log(a, dis)
+      if (a.x > 300) {
+        return true
+      }
+      return false
+    },
+    onDrag (p) {
+      console.log('dragging')
+      console.log(p)
+      if (p.x > 500) {
+        this.disabled = true
+      }
+    },
+    onCatch (p) {
+      console.log('catched')
+      console.log(p)
+    }
+  }
 }
 </script>
 

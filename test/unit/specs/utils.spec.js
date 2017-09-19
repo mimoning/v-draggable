@@ -1,8 +1,9 @@
 import {
+  distance,
   getTranslateVals,
   moveElement,
   setStyle
-} from '@/directives/utils'
+} from '@/utils'
 
 // 测试 setStyle
 describe('SetStyle', () => {
@@ -81,5 +82,20 @@ describe('MoveElement', () => {
     moveElement(test, event, startPoint)
     expect(test.style.transform)
       .equal('rotate(120deg) translate(90px, 280px)')
+  })
+})
+
+// 测试 distance
+describe('Calculate Distance', () => {
+  const a = { x: 2, y: 4 }
+  const b = { x: 5, y: 8 }
+  // 正常计算距离
+  it('Normal Distance', () => {
+    expect(distance(a, b))
+      .eql({
+        dX: 3,
+        dY: 4,
+        d: 5
+      })
   })
 })

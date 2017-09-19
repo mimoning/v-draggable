@@ -4,7 +4,10 @@
       draggingStyle: {
         color: 'red'
       },
-      draggingClass: 'mimo'
+      draggingClass: 'mimo',
+      onDrop,
+      onDrag,
+      onCatch
     }">
       <div id="trigger">Trigger</div>
       <div class="test-trigger">Trigger2</div>
@@ -14,7 +17,24 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  methods: {
+    onDrop (a, dis) {
+      console.log(a, dis)
+      if (a.x > 300) {
+        return true
+      }
+      return false
+    },
+    onDrag (p) {
+      console.log('dragging')
+      console.log(p)
+    },
+    onCatch (p) {
+      console.log('catched')
+      console.log(p)
+    }
+  }
 }
 </script>
 

@@ -1,4 +1,5 @@
 import {
+  distance,
   getTranslateVals,
   moveElement,
   setStyle
@@ -25,6 +26,13 @@ const startPoint = {
   translateX: undefined,
   translateY: undefined
 }
+// 原始位置
+const originPoint = {
+  is: true,
+  x: undefined,
+  y: undefined,
+  style: undefined
+}
 // 触发元素的选择器
 let $selector = ''
 // 触发元素
@@ -32,9 +40,17 @@ let $trigger = null
 // 移动元素
 let $el = null
 
+// 一些对外暴露的事件
+const $events = {
+  onCatch () {},
+  onDrag () {},
+  onDrop () {}
+}
+
 // 鼠标移动
 function onMove (event) {
   moveElement($el, event, startPoint)
+  $events.onDrag({x: event.clientX, y: event.clientY})
 }
 
 // 触发元素的一些事件
@@ -47,17 +63,25 @@ function triggerMouseover () {
 // 记录开始点坐标及绑定元素的 translate 值
 // 给 document 绑定鼠标移动事件，使绑定元素可以随鼠标移动，即拖动效果
 function triggerMousedown (event) {
-  // 添加额外的样式或 class
-  setStyle($el, EXTRA_STYLE)
-  $el.classList.add(EXTRA_CLASS)
   setStyle($trigger, MOUSE_DOWN_STYLE)
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
+  // 触发 onCatch 事件回调
+  $events.onCatch({x: startPoint.x, y: startPoint.y})
   // 记录开始时，绑定元素的 translate 值
   const translate = getTranslateVals($el)
-  startPoint.translateX = translate.translateX
-  startPoint.translateY = translate.translateY
+  Object.assign(startPoint, translate)
+  // 记录原始位置及样式
+  if (originPoint.is) {
+    originPoint.is = false
+    originPoint.style = Object.assign({}, $el.style)
+    originPoint.x = startPoint.x
+    originPoint.y = startPoint.y
+  }
+  // 添加额外的样式或 class
+  setStyle($el, EXTRA_STYLE)
+  $el.classList.add(EXTRA_CLASS)
   // 为 document 绑定 mousemove 事件
   document.addEventListener('mousemove', onMove)
 }
@@ -65,9 +89,23 @@ function triggerMousedown (event) {
 // 鼠标左键在 document 上弹起时
 // 要解除 document 上的 mousemove 事件，使元素不在随鼠标移动
 // 即，拖动停止
-function onDrop () {
-  // 把添加的额外样式或 class 去除
-  setStyle($el, ORIGIN_STYLE)
+function onDrop (event) {
+  // 调用 onDrop 事件回调函数，并传入当前鼠标的位置和距离原始点距离作为参数
+  // 且可依靠返回值决定是否返回初始位置
+  const curPoint = {
+    x: event.clientX,
+    y: event.clientY
+  }
+  const backToOrigin = $events.onDrop(
+    curPoint,
+    distance(originPoint, curPoint)
+  )
+  if (backToOrigin) {
+    setStyle($el, originPoint.style)
+  } else {
+    // 如果不用返回初始位置，则仅仅把添加的额外样式或 class 去除
+    setStyle($el, ORIGIN_STYLE)
+  }
   $el.classList.remove(EXTRA_CLASS)
   // 将鼠标样式还原成小手状
   setStyle($trigger, MOUSE_OVER_STYLE)
@@ -108,6 +146,19 @@ function getOriginStyle (el) {
   })
 }
 
+// 获取指令绑定的事件回调
+function getEventsCallback (value) {
+  if (value.onCatch && (typeof value.onCatch === 'function')) {
+    $events.onCatch = value.onCatch
+  }
+  if (value.onDrag && (typeof value.onDrag === 'function')) {
+    $events.onDrag = value.onDrag
+  }
+  if (value.onDrop && (typeof value.onDrop === 'function')) {
+    $events.onDrop = value.onDrop
+  }
+}
+
 // 当指令绑定到元素上时
 function bind (el, binding, vnode) {
   // 获取触发元素
@@ -116,19 +167,21 @@ function bind (el, binding, vnode) {
   getExtraStyleAndClass(binding.value)
   // 获取绑定元素的原始 style
   getOriginStyle(el)
+  // 获取指令绑定的事件回调
+  getEventsCallback(binding.value)
   // 处理事件绑定
   // 触发拖动元素
   $trigger.addEventListener('mouseover', triggerMouseover)
   // 开始拖动
   $trigger.addEventListener('mousedown', triggerMousedown)
   // 停止拖动
-  document.addEventListener('mouseup', onDrop)
+  $trigger.addEventListener('mouseup', onDrop)
 }
 // 指令解除绑定时，需把所有事件移除
 function unbind () {
   $trigger.removeEventListener('mouseover', triggerMouseover)
   $trigger.removeEventListener('mousedown', triggerMousedown)
-  document.removeEventListener('mouseup', onDrop)
+  $trigger.removeEventListener('mouseup', onDrop)
 }
 
 export default {

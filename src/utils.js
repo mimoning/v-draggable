@@ -50,7 +50,23 @@ function moveElement (el, event, start) {
   }
 }
 
+// 计算两点之间距离
+function distance (a, b) {
+  // 横向距离
+  const dX = b.x - a.x
+  // 纵向距离
+  const dY = b.y - a.y
+  // 直线距离
+  const d = Math.sqrt(dX ** 2 + dY ** 2)
+  return {
+    dX,
+    dY,
+    d
+  }
+}
+
 export {
+  distance,
   getTranslateVals,
   moveElement,
   setStyle

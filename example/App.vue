@@ -7,7 +7,8 @@
       draggingClass: 'mimo',
       onDrop,
       onDrag,
-      onCatch
+      onCatch,
+      disabled
     }">
       <div id="trigger">Trigger</div>
       <div class="test-trigger">Trigger2</div>
@@ -18,6 +19,11 @@
 <script>
 export default {
   name: 'app',
+  data () {
+    return {
+      disabled: false
+    }
+  },
   methods: {
     onDrop (a, dis) {
       console.log(a, dis)
@@ -29,6 +35,9 @@ export default {
     onDrag (p) {
       console.log('dragging')
       console.log(p)
+      if (p.x > 500) {
+        this.disabled = true
+      }
     },
     onCatch (p) {
       console.log('catched')

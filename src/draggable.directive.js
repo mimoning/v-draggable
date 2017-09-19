@@ -42,6 +42,7 @@ const $events = {
 // 鼠标移动
 function onMove (event) {
   moveElement($el, event, startPoint)
+  $events.onDrag({x: event.clientX, y: event.clientY})
 }
 
 // 触发元素的一些事件

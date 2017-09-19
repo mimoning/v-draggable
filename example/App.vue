@@ -22,8 +22,9 @@ export default {
     onDrop (a) {
       console.log(a)
     },
-    onDrag () {
+    onDrag (p) {
       console.log('dragging')
+      console.log(p)
     },
     onCatch (p) {
       console.log('catched')

@@ -19,8 +19,8 @@
 export default {
   name: 'app',
   methods: {
-    onDrop (a) {
-      console.log(a)
+    onDrop (a, dis) {
+      console.log(a, dis)
       if (a.x > 300) {
         return true
       }

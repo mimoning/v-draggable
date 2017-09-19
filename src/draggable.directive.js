@@ -1,4 +1,5 @@
 import {
+  distance,
   getTranslateVals,
   moveElement,
   setStyle
@@ -28,6 +29,8 @@ const startPoint = {
 // 原始位置
 const originPoint = {
   is: true,
+  x: undefined,
+  y: undefined,
   style: undefined
 }
 // 触发元素的选择器
@@ -73,6 +76,8 @@ function triggerMousedown (event) {
   if (originPoint.is) {
     originPoint.is = false
     originPoint.style = Object.assign({}, $el.style)
+    originPoint.x = startPoint.x
+    originPoint.y = startPoint.y
   }
   // 添加额外的样式或 class
   setStyle($el, EXTRA_STYLE)
@@ -85,8 +90,16 @@ function triggerMousedown (event) {
 // 要解除 document 上的 mousemove 事件，使元素不在随鼠标移动
 // 即，拖动停止
 function onDrop (event) {
-  // 调用 onDrop 事件回调函数，并传入当前鼠标的位置，且可依靠返回值决定是否返回初始位置
-  const backToOrigin = $events.onDrop({x: event.clientX, y: event.clientY})
+  // 调用 onDrop 事件回调函数，并传入当前鼠标的位置和距离原始点距离作为参数
+  // 且可依靠返回值决定是否返回初始位置
+  const curPoint = {
+    x: event.clientX,
+    y: event.clientY
+  }
+  const backToOrigin = $events.onDrop(
+    curPoint,
+    distance(originPoint, curPoint)
+  )
   if (backToOrigin) {
     setStyle($el, originPoint.style)
   } else {

@@ -1,6 +1,6 @@
 {
   "name": "mimo-draggable",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A vue directive to let your components drag and drop~",
   "author": "mimo_ning <961992926@qq.com>",
   "scripts": {

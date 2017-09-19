@@ -43,12 +43,12 @@ You can use the *v-draggable* very easily in your vue application.
 | Arguments | Default | Options | Required | Introduction |
 |-----------|---------|---------|----------|--------------|
 | arg | - | - | no | The id of trigger element in binding element. If no this argument, the trigger element will be the binding element. This argument has a higher priority than the next argument. |
-| value | - | `string` / `object` | no | When `string`, it's the selector of trigger element, If the selector is no matches, the trigger element will be the binding element too; When `object`, look at [options](#Options). |
+| value | - | `string` / `object` | no | When `string`, it's the selector of trigger element, If the selector is no matches, the trigger element will be the binding element too; When `object`, look at [options](#options). |
 
 | 指令参数 | 默认值 | 可选项 | 必填 | 简介 |
 |---------|-------|-------|-----|------|
 | arg | - | - | 否 | 触发元素的 id。如果不指定，则触发元素是绑定元素本身。优先级比字符串形式的 value 高 |
-| value | - | `字符串` / `对象` | 否 | 当其是字符串，则指定了触发元素的选择器，如果此选择器没有匹配的元素，则触发元素是绑定元素本身；当其实对象，请看[配置项](#Options) |
+| value | - | `字符串` / `对象` | 否 | 当其是字符串，则指定了触发元素的选择器，如果此选择器没有匹配的元素，则触发元素是绑定元素本身；当其实对象，请看[配置项](#options) |
 
 ### Options
 | Name | Default | Options | Required | Introduction |

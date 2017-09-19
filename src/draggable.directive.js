@@ -18,7 +18,7 @@ const EXTRA_STYLE = {}
 // 原本的样式
 const ORIGIN_STYLE = {}
 // 额外的 class
-let EXTRA_CLASS = ''
+let EXTRA_CLASS
 // 开始点的坐标及元素的 translate 值
 const startPoint = {
   x: undefined,
@@ -123,8 +123,12 @@ function getTrigger (el, binding) {
   if (binding.arg) {
     $selector = `#${binding.arg}`
   }
-  // 在找不到指定触发元素情况下，触发元素为绑定元素本身
-  $trigger = el.querySelector($selector) || el
+  // 不指定 selector 或在找不到指定触发元素情况下，触发元素为绑定元素本身
+  if ($selector) {
+    $trigger = el.querySelector($selector) || el
+  } else {
+    $trigger = el
+  }
   $el = el
 }
 
@@ -148,13 +152,13 @@ function getOriginStyle (el) {
 
 // 获取指令绑定的事件回调
 function getEventsCallback (value) {
-  if (value.onCatch && (typeof value.onCatch === 'function')) {
+  if (value && (typeof value.onCatch === 'function')) {
     $events.onCatch = value.onCatch
   }
-  if (value.onDrag && (typeof value.onDrag === 'function')) {
+  if (value && (typeof value.onDrag === 'function')) {
     $events.onDrag = value.onDrag
   }
-  if (value.onDrop && (typeof value.onDrop === 'function')) {
+  if (value && (typeof value.onDrop === 'function')) {
     $events.onDrop = value.onDrop
   }
 }
@@ -188,7 +192,7 @@ function bind (el, binding, vnode) {
   // 获取指令绑定的事件回调
   getEventsCallback(binding.value)
   // 处理事件绑定，当 disabled 不为 true 时才绑定事件
-  if (!binding.value.disabled) {
+  if (!(binding.value && binding.value.disabled)) {
     bindListeners()
   }
 }
@@ -199,7 +203,7 @@ function unbind () {
 // 指令更新时
 function update (el, binding, vnode) {
   // 如果指令的值中，disabled 指定为 true，则解绑所有已绑定事件
-  if (binding.value.disabled) {
+  if (binding.value && binding.value.disabled) {
     removeListeners()
     setStyle($el, ORIGIN_STYLE)
     setStyle($trigger, {cursor: 'initial'})

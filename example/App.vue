@@ -21,6 +21,10 @@ export default {
   methods: {
     onDrop (a) {
       console.log(a)
+      if (a.x > 300) {
+        return true
+      }
+      return false
     },
     onDrag (p) {
       console.log('dragging')

@@ -32,6 +32,13 @@ let $trigger = null
 // 移动元素
 let $el = null
 
+// 一些对外暴露的事件
+const $events = {
+  onCatch () {},
+  onDrag () {},
+  onDrop () {}
+}
+
 // 鼠标移动
 function onMove (event) {
   moveElement($el, event, startPoint)
@@ -65,12 +72,14 @@ function triggerMousedown (event) {
 // 鼠标左键在 document 上弹起时
 // 要解除 document 上的 mousemove 事件，使元素不在随鼠标移动
 // 即，拖动停止
-function onDrop () {
+function onDrop (event) {
   // 把添加的额外样式或 class 去除
   setStyle($el, ORIGIN_STYLE)
   $el.classList.remove(EXTRA_CLASS)
   // 将鼠标样式还原成小手状
   setStyle($trigger, MOUSE_OVER_STYLE)
+  // 调用 onDrop 事件回调函数，并传入当前鼠标的位置
+  $events.onDrop({x: event.clientX, y: event.clientY})
   // 移除 document 上的 mousemove 事件
   document.removeEventListener('mousemove', onMove)
 }
@@ -108,6 +117,19 @@ function getOriginStyle (el) {
   })
 }
 
+// 获取指令绑定的事件回调
+function getEventsCallback (value) {
+  if (value.onCatch && (typeof value.onCatch === 'function')) {
+    $events.onCatch = value.onCatch
+  }
+  if (value.onDrag && (typeof value.onDrag === 'function')) {
+    $events.onDrag = value.onDrag
+  }
+  if (value.onDrop && (typeof value.onDrop === 'function')) {
+    $events.onDrop = value.onDrop
+  }
+}
+
 // 当指令绑定到元素上时
 function bind (el, binding, vnode) {
   // 获取触发元素
@@ -116,19 +138,21 @@ function bind (el, binding, vnode) {
   getExtraStyleAndClass(binding.value)
   // 获取绑定元素的原始 style
   getOriginStyle(el)
+  // 获取指令绑定的事件回调
+  getEventsCallback(binding.value)
   // 处理事件绑定
   // 触发拖动元素
   $trigger.addEventListener('mouseover', triggerMouseover)
   // 开始拖动
   $trigger.addEventListener('mousedown', triggerMousedown)
   // 停止拖动
-  document.addEventListener('mouseup', onDrop)
+  $trigger.addEventListener('mouseup', onDrop)
 }
 // 指令解除绑定时，需把所有事件移除
 function unbind () {
   $trigger.removeEventListener('mouseover', triggerMouseover)
   $trigger.removeEventListener('mousedown', triggerMousedown)
-  document.removeEventListener('mouseup', onDrop)
+  $trigger.removeEventListener('mouseup', onDrop)
 }
 
 export default {

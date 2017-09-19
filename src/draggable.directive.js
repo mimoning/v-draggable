@@ -159,6 +159,24 @@ function getEventsCallback (value) {
   }
 }
 
+// 为触发元素绑定一堆事件
+function bindListeners () {
+  // 触发拖动元素
+  $trigger.addEventListener('mouseover', triggerMouseover)
+  // 开始拖动
+  $trigger.addEventListener('mousedown', triggerMousedown)
+  // 停止拖动
+  $trigger.addEventListener('mouseup', onDrop)
+}
+
+// 移除所有已绑定事件
+function removeListeners () {
+  $trigger.removeEventListener('mouseover', triggerMouseover)
+  $trigger.removeEventListener('mousedown', triggerMousedown)
+  $trigger.removeEventListener('mouseup', onDrop)
+  document.removeEventListener('mousemove', onMove)
+}
+
 // 当指令绑定到元素上时
 function bind (el, binding, vnode) {
   // 获取触发元素
@@ -169,22 +187,29 @@ function bind (el, binding, vnode) {
   getOriginStyle(el)
   // 获取指令绑定的事件回调
   getEventsCallback(binding.value)
-  // 处理事件绑定
-  // 触发拖动元素
-  $trigger.addEventListener('mouseover', triggerMouseover)
-  // 开始拖动
-  $trigger.addEventListener('mousedown', triggerMousedown)
-  // 停止拖动
-  $trigger.addEventListener('mouseup', onDrop)
+  // 处理事件绑定，当 disabled 不为 true 时才绑定事件
+  if (!binding.value.disabled) {
+    bindListeners()
+  }
 }
 // 指令解除绑定时，需把所有事件移除
 function unbind () {
-  $trigger.removeEventListener('mouseover', triggerMouseover)
-  $trigger.removeEventListener('mousedown', triggerMousedown)
-  $trigger.removeEventListener('mouseup', onDrop)
+  removeListeners()
+}
+// 指令更新时
+function update (el, binding, vnode) {
+  // 如果指令的值中，disabled 指定为 true，则解绑所有已绑定事件
+  if (binding.value.disabled) {
+    removeListeners()
+    setStyle($el, ORIGIN_STYLE)
+    setStyle($trigger, {cursor: 'initial'})
+  } else {
+    bindListeners()
+  }
 }
 
 export default {
   bind,
-  unbind
+  unbind,
+  update
 }

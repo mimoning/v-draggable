@@ -61,6 +61,8 @@ function triggerMousedown (event) {
   // 记录开始点坐标
   startPoint.x = event.clientX
   startPoint.y = event.clientY
+  // 触发 onCatch 事件回调
+  $events.onCatch({x: startPoint.x, y: startPoint.y})
   // 记录开始时，绑定元素的 translate 值
   const translate = getTranslateVals($el)
   startPoint.translateX = translate.translateX
